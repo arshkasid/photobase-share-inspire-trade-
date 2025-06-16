@@ -359,14 +359,14 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
     </h1>
     <div class="main-layout">
         <!-- Left Sidebar: Profile Summary -->
-        <div class="sidebar">
+       <div class="sidebar">
             <div class="profile-summary">
-                <img src="../assests/images.jpg" class="profile-pic" alt="Profile">
+                <img src="../users/profile_picture/<?php echo $profile_pic; ?>" class="profile-pic" alt="Profile">
                 <div class="username"><?php
                 echo $_SESSION['username'];
                 ?></div>
                 <div class="bio"><?php echo $bio; ?></div>
-                <a href="../users/profile.php">View Profile &rarr;</a>
+                <a href="../users/profile.php?username=<?php echo $_SESSION['username']; ?>">View Profile &rarr;</a>
             </div>
         </div>
         <!-- Center: Feed -->

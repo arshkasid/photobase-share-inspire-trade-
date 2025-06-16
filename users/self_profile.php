@@ -281,7 +281,7 @@ if ($_SESSION['username']  == $searchname) {
 }
 
 
-$getalldata = mysqli_query($conn, "SELECT * FROM users WHERE username = '$searchname'");
+$getalldata = mysqli_query($conn, "SELECT * FROM users WHERE username = '$_SESSION[username]'");
 $user_data = mysqli_fetch_assoc($getalldata);
 
 $username = $user_data['username'];
@@ -312,12 +312,11 @@ $ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
                     <?php echo !empty($bio) ? htmlspecialchars($bio) : 'No bio available'; ?>
                 </div>
                 <div class="button-row">
-                    <button class="follow-btn">Follow</button>
+                    <a href="edit.php" class="follow-btn">Edit</a>
                     <a href="https://instagram.com/<?php echo $ig; ?>" target="_blank" class="ig-btn">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="ig-logo" alt="Instagram">
                         Connect on IG
                     </a>
-                    
                 </div>
             </div>
         </div>
@@ -411,4 +410,5 @@ $ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
         </div>
     </div>
 </body>
+</html>
 </html>

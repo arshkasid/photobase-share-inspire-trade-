@@ -357,7 +357,7 @@ if (!isset($_SESSION['username'])) {
         <!-- Left Sidebar: Profile Summary -->
         <div class="sidebar">
             <div class="profile-summary">
-                <img src="../assests/images.jpg" class="profile-pic" alt="Profile">
+                <img src="../users/profile_picture/<?php echo $profile_pic; ?>" class="profile-pic" alt="Profile">
                 <div class="username"><?php
                 echo $_SESSION['username'];
                 ?></div>

@@ -71,8 +71,8 @@ if ($getaccount && $getaccount->num_rows > 0): ?>
         <?php while($row = mysqli_fetch_assoc($getaccount)): ?>
             <div class="account-card">
                 <div class="account-card-header">
-                    <img src="<?php echo !empty($row['picture']) ? htmlspecialchars($row['picture']) : '../assests/default.png'; ?>" alt="Profile" class="account-card-img">
-                    <a href="../users/profile.php?user=<?php echo urlencode($row['username']); ?>" class="account-card-username">
+                    <img src="<?php echo !empty($row['picture']) ? '../users/profile_picture/' . htmlspecialchars($row['picture']) : '../assests/default.png'; ?>" alt="Profile" class="account-card-img">
+                    <a href="../users/profile.php?username=<?php echo urlencode($row['username']); ?>" class="account-card-username">
                         <?php echo htmlspecialchars($row['username']); ?>
                     </a>
                 </div>
