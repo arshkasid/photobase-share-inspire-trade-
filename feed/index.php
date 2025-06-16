@@ -391,6 +391,39 @@ if (!isset($_SESSION['username'])) {
         .popup-community .join-btn:hover {
             background: #0056b3;
         }
+        .quick-navs-title {
+            font-weight: bold;
+            font-size: 17px;
+            text-align: center;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+            color: #007bff;
+        }
+        .quick-nav-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(90deg, #e3f0ff 0%, #f7faff 100%);
+            color: #007bff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 0;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 1px 6px rgba(0,123,255,0.06);
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+        .quick-nav-btn.active, .quick-nav-btn:hover, .quick-nav-btn:focus {
+            background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(0,123,255,0.13);
+            text-decoration: none;
+            transform: translateY(-2px) scale(1.03);
+        }
     </style>
     <script>
         function filterPosts(type) {
@@ -449,23 +482,39 @@ if (!isset($_SESSION['username'])) {
         <a href="index.php?page=following<?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?>"<?php if (isset($_GET['page']) && $_GET['page'] === 'following') echo ' class="nav-btn active"'; else echo ' class="nav-btn"'; ?> id="btn-following">Following</a>
     </div>
     <div class="search-bar-container">
-        <form style="display:flex;align-items:center;width:100%;justify-content:center;" method="get" action="search.php">
-            <input type="hidden" name="page" value="accounts">
+        <form style="display:flex;align-items:center;width:100%;justify-content:center;gap:10px;" method="get" action="search.php">
+            <input type="hidden" name="page" value="all">
             <input type="text" class="search-bar" placeholder="Search posts, users, or gear..." name="search">
             <button type="submit" class="search-btn">Search</button>
+            <a href="index.php" style="background:#444; color:#fff; border:none; border-radius:24px; padding:10px 24px; font-weight:bold; font-size:16px; text-decoration:none; transition:background 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:inline-block;">
+                &larr; Home Feed
+            </a>
         </form>
     </div>
     <h1 style="text-align:center;">Feed</h1>
     <div class="main-layout">
-        <!-- Left Sidebar: Profile Summary -->
-        <div class="sidebar">
-            <div class="profile-summary">
-                <img src="../users/profile_picture/<?php echo $profile_pic; ?>" class="profile-pic" alt="Profile">
-                <div class="username"><?php
-                echo $_SESSION['username'];
-                ?></div>
-                <div class="bio"><?php echo $bio; ?></div>
-                <a href="../users/profile.php?username=<?php echo $_SESSION['username']; ?>">View Profile &rarr;</a>
+        <!-- Left Sidebar: Profile Summary and Quick Navs -->
+        <div style="display: flex; flex-direction: column; gap: 24px; width: 250px;">
+            <div class="sidebar">
+                <div class="profile-summary">
+                    <img src="../users/profile_picture/<?php echo $profile_pic; ?>" class="profile-pic" alt="Profile">
+                    <div class="username"><?php echo $_SESSION['username']; ?></div>
+                    <div class="bio"><?php echo $bio; ?></div>
+                    <a href="../users/profile.php?username=<?php echo $_SESSION['username']; ?>">View Profile &rarr;</a>
+                </div>
+            </div>
+            <div class="sidebar">
+                <div class="quick-navs-title" style="font-weight:bold;font-size:17px;text-align:center;margin-bottom:14px;letter-spacing:1px;color:#007bff;">Quick Navs</div>
+                <div style="display: flex; flex-direction: column; gap: 0;">
+                    <a href="index.php" class="quick-nav-btn<?php if (!isset($_GET['page']) || $_GET['page'] === 'feed') echo ' active'; ?>">
+                        <?php echo (isset($_GET['page']) && $_GET['page'] === 'posts') ? 'Posts' : 'Home Feed'; ?>
+                    </a>
+                    <a href="search.php?page=trips&search=trip" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'trips') echo ' active'; ?>">Trips</a>
+                    <a href="search.php?page=uncycle&search=sell" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'uncycle') echo ' active'; ?>">Uncycle</a>
+                    <a href="search.php?page=market&search=market" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'market') echo ' active'; ?>">
+                        <?php echo (isset($_GET['page']) && $_GET['page'] === 'ads') ? 'Ads' : 'Marketplace'; ?>
+                    </a>
+                </div>
             </div>
         </div>
         <!-- Center: Feed -->

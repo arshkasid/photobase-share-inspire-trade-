@@ -3,10 +3,17 @@ $search_query = isset($_GET['search']) ? $_GET['search'] : '';
 
 
 
-$getpostsrandom=  "SELECT * FROM posts WHERE title LIKE  '%$search_query%' OR caption LIKE '%$search_query%' ORDER BY created_at DESC";
-$getpostsrandom = mysqli_query($conn, $getpostsrandom);
+$getads = mysqli_query($conn, "
+    SELECT * FROM posts 
+    WHERE type = 'ad' AND (
+        title LIKE '%$search_query%' OR 
+        caption LIKE '%$search_query%' OR 
+        tags LIKE '%$search_query%'
+    )
+    ORDER BY created_at DESC
+");
 
-while($row = mysqli_fetch_assoc($getpostsrandom)) {
+while($row = mysqli_fetch_assoc($getads)) {
     $postuser = $row['username'];
     $post_id = $row['post_id'];
     $post_title = $row['title'];

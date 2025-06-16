@@ -1,6 +1,6 @@
 <?php
 
-$search_item=$_GET['search'];
+$search_item=$_GET['search'] ?? '';
 
 $getaccountq = "SELECT * FROM users WHERE username LIKE '%$search_item%' OR name LIKE '%$search_item%'";
 

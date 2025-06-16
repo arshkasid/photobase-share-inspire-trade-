@@ -1,10 +1,34 @@
 <?php
 $search_query = isset($_GET['query']) ? $_GET['query'] : '';
-$postq="SELECT * FROM posts WHERE title LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR caption LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' ORDER BY created_at DESC";
+$postq="SELECT * FROM posts WHERE (title LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR caption LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR tags LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%') ORDER BY created_at DESC";
 
 
-$getpostsrandom=  "SELECT * FROM posts WHERE title LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR caption LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' ORDER BY created_at DESC";
+$getpostsrandom=  "SELECT * FROM posts WHERE (title LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR caption LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%' OR tags LIKE '%" . mysqli_real_escape_string($conn, $search_query) . "%') ORDER BY created_at DESC";
 $getpostsrandom = mysqli_query($conn, $getpostsrandom);
+
+// Add CSS for better looking comment buttons
+echo "<style>
+.comment-btn-custom {
+    margin-top: 14px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+}
+.comment-btn-custom:hover {
+    background: #0056b3;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(0,123,255,0.13);
+}
+</style>";
 
 while($row = mysqli_fetch_assoc($getpostsrandom)) {
     $postuser = $row['username'];
@@ -39,10 +63,8 @@ if ($post_type === 'picture') {
                 <div class='post-content'>$post_content</div>
                 <img src='../users/post_picture/$post_image' class='post-img' alt='Post Image'>
                 <!-- Comments Section -->
-                <a href='../comments.php?post_id=1'>
-                    <button style='margin-top:14px;background:#007bff;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;'>
-                        Comments
-                    </button>
+                <a href='../comments.php?post_id=1' class='comment-btn-custom'>
+                    Comments
                 </a>
             </div>
     
@@ -64,10 +86,8 @@ if ($post_type === 'picture') {
                     <img src='../users/post_picture/$post_image' class='post-img' alt='Lens'>
                 </div>
                 <!-- Comments Section -->
-                <a href='../comments.php?post_id=$post_id'>
-                    <button style='margin-top:14px;background:#007bff;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;'>
-                        Comments
-                    </button>
+                <a href='../comments.php?post_id=$post_id' class='comment-btn-custom'>
+                    Comments
                 </a>
             </div>
     ";
@@ -83,10 +103,8 @@ if ($post_type === 'picture') {
                 </div>
                 <div class='post-content'>$post_content</div>
                 <!-- Comments Section -->
-                <a href='../comments.php?post_id=$post_id'>
-                    <button style='margin-top:14px;background:#007bff;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;'>
-                        Comments
-                    </button>
+                <a href='../comments.php?post_id=$post_id' class='comment-btn-custom'>
+                    Comments
                 </a>
             </div>
     ";}

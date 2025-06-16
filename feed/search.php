@@ -445,7 +445,7 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
     </div>
     <div class="search-bar-container">
         <form style="display:flex;align-items:center;width:100%;justify-content:center;gap:10px;" method="get" action="search.php">
-            <input type="hidden" name="page" value="accounts">
+            <input type="hidden" name="page" value="all">
             <input type="text" class="search-bar" placeholder="Search posts, users, or gear..." name="search">
             <button type="submit" class="search-btn">Search</button>
             <a href="index.php" style="background:#444; color:#fff; border:none; border-radius:24px; padding:10px 24px; font-weight:bold; font-size:16px; text-decoration:none; transition:background 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:inline-block;">
@@ -474,14 +474,22 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
         <!-- Center: Feed -->
         <div class="feed-container">
             <?php
-            if (isset($_GET['page']) && $_GET['page'] === 'accounts') {
-                include('accounts.php');
-            } else if (isset($_GET['page']) && $_GET['page'] === 'posts') {
-                include('search_posts.php');
-            } else if (isset($_GET['page']) && $_GET['page'] === 'ads') {
-                include('search_ads.php');
-            }else {
-                include('accounts.php');
+            if (
+                (isset($_GET['page']) && $_GET['page'] === 'accounts') ||
+                (isset($_GET['page']) && $_GET['page'] === 'posts') ||
+                (isset($_GET['page']) && $_GET['page'] === 'ads')
+            ) {
+                if ($_GET['page'] === 'accounts') {
+                    include('accounts.php');
+                } else if ($_GET['page'] === 'posts') {
+                    include('search_posts.php');
+                } else if ($_GET['page'] === 'ads') {
+                    include('search_ads.php');
+                }
+            } else if (isset($_GET['page']) && $_GET['page'] === 'all') {
+                include('allsearch.php');
+            } else {
+                include('allsearch.php');
             }
             ?>
         </div>
