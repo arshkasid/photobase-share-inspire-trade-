@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['receiver'], $_POST['m
         $stmt->execute();
         $stmt->close();
     }
-    // Redirect to avoid resubmission
     header("Location: chats.php?user=" . urlencode($receiver));
     exit();
 }
@@ -27,8 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['receiver'], $_POST['m
 // Get selected chat user
 $chat_user = isset($_GET['user']) ? $_GET['user'] : '';
 
-// Fetch all users except self
-$users = mysqli_query($conn, "SELECT username, picture, name FROM users WHERE username != '$username' ORDER BY name ASC");
+// Fetch users the current user has ever chatted with (sent or received)
+$users = mysqli_query($conn, "
+    SELECT u.username, u.picture, u.name
+    FROM users u
+    WHERE u.username != '$username' AND (
+        u.username IN (SELECT receiver FROM messages WHERE sender = '$username')
+        OR u.username IN (SELECT sender FROM messages WHERE receiver = '$username')
+    )
+    GROUP BY u.username
+    ORDER BY u.name ASC
+");
 
 ?>
 <!DOCTYPE html>
@@ -93,8 +101,11 @@ $users = mysqli_query($conn, "SELECT username, picture, name FROM users WHERE us
     </div>
     <div class="chat-layout">
         <div class="user-list">
-            <div class="user-list-title">All Users</div>
+            <div class="user-list-title">Chats</div>
             <?php
+            if (mysqli_num_rows($users) == 0) {
+                echo "<div style='padding:18px;color:#888;text-align:center;'>No chats yet.</div>";
+            }
             while ($row = mysqli_fetch_assoc($users)) {
                 $u = $row['username'];
                 $pic = $row['picture'] ? $row['picture'] : 'default_profile_pic.png';

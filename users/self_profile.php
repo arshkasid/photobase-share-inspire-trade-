@@ -311,15 +311,74 @@ $ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
                 <div class="bio">
                     <?php echo !empty($bio) ? htmlspecialchars($bio) : 'No bio available'; ?>
                 </div>
-                <div class="button-row">
+                <div class="button-row" style="display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap;">
                     <a href="edit.php" class="follow-btn">Edit</a>
                     <a href="https://instagram.com/<?php echo $ig; ?>" target="_blank" class="ig-btn">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="ig-logo" alt="Instagram">
                         Connect on IG
                     </a>
+                    <button class="demo-btn" style="background:#28a745;" onclick="openPostDialog()">Post</button>
+                    <button class="demo-btn" style="background:#007bff;" onclick="openFollowingDialog()">Following</button>
                 </div>
             </div>
         </div>
+        <!-- Post Type Dialog -->
+        <div id="post-type-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;">
+            <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);min-width:260px;max-width:95vw;position:relative;text-align:center;">
+                <button onclick="closePostDialog()" style="position:absolute;top:10px;right:16px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;font-weight:bold;">&times;</button>
+                <div style="font-size:1.2rem;font-weight:bold;color:#007bff;margin-bottom:18px;">Create a Post</div>
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <a href="add_post.php?type=text" class="demo-btn" style="background:#007bff;">Text Post</a>
+                    <a href="add_post.php?type=picture" class="demo-btn" style="background:#007bff;">Picture Post</a>
+                    <a href="add_post.php?type=ad" class="demo-btn" style="background:#007bff;">Ad</a>
+                </div>
+            </div>
+        </div>
+        <!-- Following Dialog -->
+        <div id="following-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;">
+            <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);min-width:260px;max-width:95vw;position:relative;text-align:center;max-height:80vh;overflow-y:auto;">
+                <button onclick="closeFollowingDialog()" style="position:absolute;top:10px;right:16px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;font-weight:bold;">&times;</button>
+                <div style="font-size:1.2rem;font-weight:bold;color:#007bff;margin-bottom:18px;">Following</div>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <?php
+                    $following = [];
+                    $res = mysqli_query($conn, "SELECT following FROM following WHERE follower = '$username'");
+                    while ($row = mysqli_fetch_assoc($res)) {
+                        $following[] = $row['following'];
+                    }
+                    if (empty($following)) {
+                        echo "<div style='color:#888;'>You are not following anyone yet.</div>";
+                    } else {
+                        foreach ($following as $fuser) {
+                            $fres = mysqli_query($conn, "SELECT name, picture FROM users WHERE username = '$fuser' LIMIT 1");
+                            $fdata = mysqli_fetch_assoc($fres);
+                            $fname = $fdata['name'] ?? $fuser;
+                            $fpic = $fdata['picture'] ?? 'default.png';
+                            echo "<a href='profile.php?username=" . urlencode($fuser) . "' style='display:flex;align-items:center;gap:10px;text-decoration:none;color:#222;padding:8px 0;'>
+                                    <img src='profile_picture/$fpic' style='width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #007bff;'>
+                                    <span style='font-weight:bold;'>$fname</span>
+                                    <span style='color:#888;font-size:13px;margin-left:8px;'>@$fuser</span>
+                                </a>";
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+        <script>
+            function openPostDialog() {
+                document.getElementById('post-type-dialog').style.display = 'flex';
+            }
+            function closePostDialog() {
+                document.getElementById('post-type-dialog').style.display = 'none';
+            }
+            function openFollowingDialog() {
+                document.getElementById('following-dialog').style.display = 'flex';
+            }
+            function closeFollowingDialog() {
+                document.getElementById('following-dialog').style.display = 'none';
+            }
+        </script>
         <div class="user-posts">
             <h2>Posts</h2>
             <?php

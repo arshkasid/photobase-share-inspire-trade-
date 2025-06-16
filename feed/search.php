@@ -403,7 +403,7 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
             display: block;
             width: 100%;
             background: linear-gradient(90deg, #e3f0ff 0%, #f7faff 100%);
-            color: #007bff;
+            color: #007bff !important;
             border: none;
             border-radius: 10px;
             padding: 13px 0;
@@ -411,7 +411,7 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
             font-size: 16px;
             margin-bottom: 10px;
             text-align: center;
-            text-decoration: none;
+            text-decoration: none !important;
             transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
             box-shadow: 0 1px 6px rgba(0,123,255,0.06);
             cursor: pointer;
@@ -419,9 +419,9 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
         }
         .quick-nav-btn.active, .quick-nav-btn:hover, .quick-nav-btn:focus {
             background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
-            color: #fff;
+            color: #fff !important;
             box-shadow: 0 2px 12px rgba(0,123,255,0.13);
-            text-decoration: none;
+            text-decoration: none !important;
             transform: translateY(-2px) scale(1.03);
         }
     </style>
@@ -503,6 +503,9 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
                     <div class="username"><?php echo $_SESSION['username']; ?></div>
                     <div class="bio"><?php echo $bio; ?></div>
                     <a href="../users/profile.php?username=<?php echo $_SESSION['username']; ?>">View Profile &rarr;</a>
+                    <div style="margin-top:12px;">
+                        <button class="quick-nav-btn" style="background:#28a745;color:#fff !important;" onclick="openPostDialog()">Post</button>
+                    </div>
                 </div>
             </div>
             <div class="sidebar">
@@ -571,7 +574,6 @@ while ($row = mysqli_fetch_assoc($getrandom3)) {
             <div class="sidebar">
                 <div class="random-accounts-title">Suggested Communities</div>
                 <?php
-                // Only show communities the user hasn't joined
                 $gettop3 = mysqli_query($conn, "
                     SELECT c.* FROM communities c
                     LEFT JOIN join_comm j ON c.name = j.community AND j.username = '$username'
@@ -580,11 +582,14 @@ while ($row = mysqli_fetch_assoc($getrandom3)) {
                 ");
                 while ($row = mysqli_fetch_assoc($gettop3)) {
                     $community_name = $row['name'];
-                    $community_picture = $row['picture'] ? $row['picture'] : 'default_community_pic.png';
+                    $community_id = $row['id'];
+                    $pic_res = mysqli_query($conn, "SELECT picture FROM communities WHERE id = '$community_id' LIMIT 1");
+                    $pic_row = mysqli_fetch_assoc($pic_res);
+                    $community_picture = $pic_row && $pic_row['picture'] ? $pic_row['picture'] : 'default_community_pic.png';
                     echo "
                         <div class='random-account'>
-                            <img src='../communities/pictures/$community_picture' class='profile-pic' alt='Community'>
-                            <span class='username'>$community_name</span>
+                            <img src='../assests/community_pic/$community_picture' class='profile-pic' alt='Community'>
+                            <a href='../communities/community.php?id=$community_id' style='font-weight:bold;color:#007bff;text-decoration:none;' class='username'>$community_name</a>
                             <button class='follow-btn' type='button' data-community=\"" . htmlspecialchars($community_name, ENT_QUOTES) . "\" onclick=\"joinCommunity('" . htmlspecialchars($community_name, ENT_QUOTES) . "')\">Join</button>
                         </div>
                     ";
@@ -620,7 +625,7 @@ while ($row = mysqli_fetch_assoc($getrandom3)) {
                     $community_url = "../communities/community.php?id=" . urlencode($community_id);
                     echo "
                         <div class='popup-community'>
-                            <img src='../communities/pictures/$community_picture' class='profile-pic' alt='Community'>
+                            <img src='../assests/community_pic/$community_picture' class='profile-pic' alt='Community'>
                             <a href='$community_url' class='community-name' style='color:#007bff;text-decoration:none;font-weight:bold;' target='_blank'>$community_name</a>
                             <span class='community-tag'>$members members</span>";
                     if ($joined) {
@@ -634,8 +639,29 @@ while ($row = mysqli_fetch_assoc($getrandom3)) {
             </div>
         </div>
     </div>
+    <!-- Post Type Dialog -->
+    <div id="post-type-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;">
+        <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);min-width:260px;max-width:95vw;position:relative;text-align:center;">
+            <button onclick="closePostDialog()" style="position:absolute;top:10px;right:16px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;font-weight:bold;">&times;</button>
+            <div style="font-size:1.2rem;font-weight:bold;color:#007bff;margin-bottom:18px;">Create a Post</div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+                <a href="../users/add_post.php?type=text" class="quick-nav-btn" style="background:#007bff;color:#fff !important;">Text Post</a>
+                <a href="../users/add_post.php?type=picture" class="quick-nav-btn" style="background:#007bff;color:#fff !important;">Picture Post</a>
+                <a href="../users/add_post.php?type=ad" class="quick-nav-btn" style="background:#007bff;color:#fff !important;">Ad</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openPostDialog() {
+            document.getElementById('post-type-dialog').style.display = 'flex';
+        }
+        function closePostDialog() {
+            document.getElementById('post-type-dialog').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
 <?php
 
+?>
 ?>

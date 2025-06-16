@@ -36,7 +36,7 @@ if ($post_type === 'picture') {
                 <div class='post-content'>$post_content</div>
                 <img src='../users/post_picture/$post_image' class='post-img' alt='Post Image'>
                 <!-- Comments Section -->
-                <a href='../comments.php?post_id=1'>
+                <a href='../comments.php?post_id=$post_id'>
                     <button style='margin-top:14px;background:#007bff;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:bold;'>
                         Comments
                     </button>

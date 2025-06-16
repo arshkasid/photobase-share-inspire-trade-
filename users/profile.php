@@ -3,35 +3,68 @@ include '../connect/connect.php';
 
 session_start();
 
-
-// Check if user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: ../users/login.php");
     exit();
-}else{
+} else {
     $username = $_SESSION['username'];
     $query = "SELECT * FROM users WHERE username = '$username'";
     $result = mysqli_query($conn, $query);
     $result = mysqli_fetch_assoc($result);
     $name = $result['name'];
 
-    $profile_pic = $result['picture'] ? $result['picture'] : 'default.png'; // Fallback to default if no profile pic
+    $profile_pic = $result['picture'] ? $result['picture'] : 'default.png';
     $bio = $result['bio'] ? $result['bio'] : 'No bio available';
     $email = $result['email'] ? $result['email'] : 'No email provided';
-    
-    
-   
-
-
-    
 }
 
-// Get the logged-in username
+$searchname = isset($_GET['username']) ? $_GET['username'] : '';
 
+if ($_SESSION['username'] == $searchname) {
+    echo "<script>window.location.href = '../users/self_profile.php';</script>";
+    // if user is same redirect to self_profile
+}
 
+$getalldata = mysqli_query($conn, "SELECT * FROM users WHERE username = '$searchname'");
+$user_data = mysqli_fetch_assoc($getalldata);
 
+$username = $user_data['username'];
+$name = $user_data['name'];
+$email = $user_data['email'];
+$bio = $user_data['bio'];
+$profile_pic = $user_data['picture'];
+$ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
 
-// Removed the dynamic post fetching code as we are using static posts now
+// --- FOLLOW/UNFOLLOW LOGIC ---
+$self = $_SESSION['username'];
+$other = $username;
+
+// Handle follow/unfollow POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['follow_action'])) {
+    if ($_POST['follow_action'] === 'follow') {
+        // Insert follow
+        $stmt = $conn->prepare("INSERT INTO following (follower, following) VALUES (?, ?)");
+        $stmt->bind_param("ss", $self, $other);
+        $stmt->execute();
+        $stmt->close();
+    } elseif ($_POST['follow_action'] === 'unfollow') {
+        // Remove follow
+        $stmt = $conn->prepare("DELETE FROM following WHERE follower = ? AND following = ?");
+        $stmt->bind_param("ss", $self, $other);
+        $stmt->execute();
+        $stmt->close();
+    }
+    // Refresh to update button state
+    header("Location: profile.php?username=" . urlencode($other));
+    exit();
+}
+
+// Check if already following
+$is_following = false;
+$check = mysqli_query($conn, "SELECT 1 FROM following WHERE follower='$self' AND following='$other' LIMIT 1");
+if (mysqli_num_rows($check) > 0) {
+    $is_following = true;
+}
 ?>
 
 
@@ -274,12 +307,10 @@ if (!isset($_SESSION['username'])) {
 
 $searchname = isset($_GET['username']) ? $_GET['username'] : '';
 
-if ($_SESSION['username']  == $searchname) {
+if ($_SESSION['username'] == $searchname) {
     echo "<script>window.location.href = '../users/self_profile.php';</script>";
-// if user is same redirect to self_profile
-    
+    // if user is same redirect to self_profile
 }
-
 
 $getalldata = mysqli_query($conn, "SELECT * FROM users WHERE username = '$searchname'");
 $user_data = mysqli_fetch_assoc($getalldata);
@@ -291,6 +322,36 @@ $bio = $user_data['bio'];
 $profile_pic = $user_data['picture'];
 $ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
 
+// --- FOLLOW/UNFOLLOW LOGIC ---
+$self = $_SESSION['username'];
+$other = $username;
+
+// Handle follow/unfollow POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['follow_action'])) {
+    if ($_POST['follow_action'] === 'follow') {
+        // Insert follow
+        $stmt = $conn->prepare("INSERT INTO following (follower, following) VALUES (?, ?)");
+        $stmt->bind_param("ss", $self, $other);
+        $stmt->execute();
+        $stmt->close();
+    } elseif ($_POST['follow_action'] === 'unfollow') {
+        // Remove follow
+        $stmt = $conn->prepare("DELETE FROM following WHERE follower = ? AND following = ?");
+        $stmt->bind_param("ss", $self, $other);
+        $stmt->execute();
+        $stmt->close();
+    }
+    // Refresh to update button state
+    header("Location: profile.php?username=" . urlencode($other));
+    exit();
+}
+
+// Check if already following
+$is_following = false;
+$check = mysqli_query($conn, "SELECT 1 FROM following WHERE follower='$self' AND following='$other' LIMIT 1");
+if (mysqli_num_rows($check) > 0) {
+    $is_following = true;
+}
 ?>
     <div class="site-banner">
         photobase
@@ -311,13 +372,77 @@ $ig = $user_data['ig'] ? $user_data['ig'] : 'No Instagram linked';
                 <div class="bio">
                     <?php echo !empty($bio) ? htmlspecialchars($bio) : 'No bio available'; ?>
                 </div>
-                <div class="button-row">
-                    <button class="follow-btn">Follow</button>
+                <?php
+                // Calculate mutual communities
+                $mutual_communities = [];
+                $self_communities = [];
+                $other_communities = [];
+
+                $res1 = mysqli_query($conn, "SELECT community FROM join_comm WHERE username = '$self'");
+                while ($row = mysqli_fetch_assoc($res1)) {
+                    $self_communities[] = $row['community'];
+                }
+                $res2 = mysqli_query($conn, "SELECT community FROM join_comm WHERE username = '$other'");
+                while ($row = mysqli_fetch_assoc($res2)) {
+                    $other_communities[] = $row['community'];
+                }
+                $mutual_communities = array_intersect($self_communities, $other_communities);
+                $n_mutual = count($mutual_communities);
+                ?>
+                <div style="margin-bottom:12px;">
+                    <span style="color:#007bff;cursor:pointer;font-weight:bold;" onclick="openMutualDialog()">
+                        <?php echo "You have $n_mutual mutual communit" . ($n_mutual == 1 ? "y" : "ies"); ?>
+                    </span>
+                </div>
+                <!-- Mutual Communities Dialog -->
+                <div id="mutual-dialog" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.25);z-index:9999;justify-content:center;align-items:center;">
+                    <div style="background:#fff;padding:32px 28px 24px 28px;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);min-width:260px;max-width:95vw;position:relative;text-align:center;max-height:80vh;overflow-y:auto;">
+                        <button onclick="closeMutualDialog()" style="position:absolute;top:10px;right:16px;font-size:1.5rem;color:#888;background:none;border:none;cursor:pointer;font-weight:bold;">&times;</button>
+                        <div style="font-size:1.2rem;font-weight:bold;color:#007bff;margin-bottom:18px;">Mutual Communities</div>
+                        <div style="display:flex;flex-direction:column;gap:12px;">
+                            <?php
+                            if ($n_mutual == 0) {
+                                echo "<div style='color:#888;'>No mutual communities.</div>";
+                            } else {
+                                foreach ($mutual_communities as $comm_name) {
+                                    // Get community id and picture
+                                    $cres = mysqli_query($conn, "SELECT id, picture FROM communities WHERE name = '" . mysqli_real_escape_string($conn, $comm_name) . "' LIMIT 1");
+                                    $crow = mysqli_fetch_assoc($cres);
+                                    $cid = $crow['id'] ?? '';
+                                    $cpic = $crow['picture'] ?? 'default_community_pic.png';
+                                    echo "<a href='../communities/community.php?id=" . urlencode($cid) . "' style='display:flex;align-items:center;gap:10px;text-decoration:none;color:#222;padding:8px 0;'>
+                                            <img src='../assests/community_pic/$cpic' style='width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #007bff;'>
+                                            <span style='font-weight:bold;'>$comm_name</span>
+                                        </a>";
+                                }
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    function openMutualDialog() {
+                        document.getElementById('mutual-dialog').style.display = 'flex';
+                    }
+                    function closeMutualDialog() {
+                        document.getElementById('mutual-dialog').style.display = 'none';
+                    }
+                </script>
+                <div class="button-row" style="display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap;">
+                    <form method="post" style="display:inline;">
+                        <?php if ($is_following): ?>
+                            <button class="follow-btn" type="submit" name="follow_action" value="unfollow" style="background:#dc3545;">Unfollow</button>
+                        <?php else: ?>
+                            <button class="follow-btn" type="submit" name="follow_action" value="follow">Follow</button>
+                        <?php endif; ?>
+                    </form>
                     <a href="https://instagram.com/<?php echo $ig; ?>" target="_blank" class="ig-btn">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" class="ig-logo" alt="Instagram">
                         Connect on IG
                     </a>
-                    
+                    <a href="chats.php?user=<?php echo urlencode($username); ?>" class="demo-btn" style="background:#28a745;">
+                        Message
+                    </a>
                 </div>
             </div>
         </div>
