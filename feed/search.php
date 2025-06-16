@@ -359,12 +359,10 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
     </h1>
     <div class="main-layout">
         <!-- Left Sidebar: Profile Summary -->
-       <div class="sidebar">
+        <div class="sidebar">
             <div class="profile-summary">
                 <img src="../users/profile_picture/<?php echo $profile_pic; ?>" class="profile-pic" alt="Profile">
-                <div class="username"><?php
-                echo $_SESSION['username'];
-                ?></div>
+                <div class="username"><?php echo $_SESSION['username']; ?></div>
                 <div class="bio"><?php echo $bio; ?></div>
                 <a href="../users/profile.php?username=<?php echo $_SESSION['username']; ?>">View Profile &rarr;</a>
             </div>
@@ -383,23 +381,46 @@ $searchword= isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['se
             }
             ?>
         </div>
-        <!-- Right Sidebar: Random Accounts -->
-        <div class="sidebar">
-            <div class="random-accounts-title">Suggested Accounts</div>
-            <div class="random-account">
-                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-pic" alt="Profile">
-                <span class="username">photog_anna</span>
-                <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
+        <!-- Right Sidebar: Random Accounts and Communities -->
+        <div style="display: block; width: 250px;">
+            <div class="sidebar" style="margin-bottom:24px;">
+                <div class="random-accounts-title">Suggested Accounts</div>
+                <div class="random-account">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-pic" alt="Profile">
+                    <span class="username">photog_anna</span>
+                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
+                </div>
+                <div class="random-account">
+                    <img src="https://randomuser.me/api/portraits/men/65.jpg" class="profile-pic" alt="Profile">
+                    <span class="username">gear_guru</span>
+                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
+                </div>
+                <div class="random-account">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" class="profile-pic" alt="Profile">
+                    <span class="username">snapqueen</span>
+                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
+                </div>
             </div>
-            <div class="random-account">
-                <img src="https://randomuser.me/api/portraits/men/65.jpg" class="profile-pic" alt="Profile">
-                <span class="username">gear_guru</span>
-                <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
-            </div>
-            <div class="random-account">
-                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="profile-pic" alt="Profile">
-                <span class="username">snapqueen</span>
-                <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
+            <div class="sidebar">
+                <div class="random-accounts-title">Suggested Communities</div>
+                <div class="random-account">
+                    <img src="https://img.icons8.com/color/48/000000/camera--v2.png" class="profile-pic" alt="Community">
+                    <span class="username">Street Photography</span>
+                    <a href="#"><button class="follow-btn">Join</button></a>
+                </div>
+                <div class="random-account">
+                    <img src="https://img.icons8.com/color/48/000000/landscape.png" class="profile-pic" alt="Community">
+                    <span class="username">Nature Lovers</span>
+                    <a href="#"><button class="follow-btn">Join</button></a>
+                </div>
+                <div class="random-account">
+                    <img src="https://img.icons8.com/color/48/000000/portrait.png" class="profile-pic" alt="Community">
+                    <span class="username">Portrait Pros</span>
+                    <a href="#"><button class="follow-btn">Join</button></a>
+                </div>
+                <div style="text-align:right; margin-top:8px;">
+                    <a href="#" style="font-size:13px;color:#007bff;text-decoration:none;font-weight:bold;">View more &rarr;</a>
+                </div>
             </div>
         </div>
     </div>
