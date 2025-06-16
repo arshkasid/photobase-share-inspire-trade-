@@ -478,7 +478,7 @@ if (!isset($_SESSION['username'])) {
     <div class="navbar">
         <a href="index.php?page=all"<?php if (isset($_GET['page'])&& $_GET['page'] === 'all') echo ' class="nav-btn "'; else echo ' class="nav-btn"'; ?> id="btn-all">All</a>
         <a href="index.php?page=posts<?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?>"<?php if (isset($_GET['page']) && $_GET['page'] === 'posts') echo ' class="nav-btn active"'; else echo ' class="nav-btn"'; ?> id="btn-post">Posts</a>
-        <a href="index.php?page=ads<?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?>"<?php if (isset($_GET['page']) && $_GET['page'] === 'ads') echo ' class="nav-btn active"'; else echo ' class="nav-btn"'; ?> id="btn-ad">Ads</a>
+        
         <a href="index.php?page=following<?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?>"<?php if (isset($_GET['page']) && $_GET['page'] === 'following') echo ' class="nav-btn active"'; else echo ' class="nav-btn"'; ?> id="btn-following">Following</a>
     </div>
     <div class="search-bar-container">
@@ -486,12 +486,24 @@ if (!isset($_SESSION['username'])) {
             <input type="hidden" name="page" value="all">
             <input type="text" class="search-bar" placeholder="Search posts, users, or gear..." name="search">
             <button type="submit" class="search-btn">Search</button>
-            <a href="index.php" style="background:#444; color:#fff; border:none; border-radius:24px; padding:10px 24px; font-weight:bold; font-size:16px; text-decoration:none; transition:background 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:inline-block;">
-                &larr; Home Feed
-            </a>
+            
         </form>
     </div>
-    <h1 style="text-align:center;">Feed</h1>
+
+<?php
+if   (isset($_GET['page']) && $_GET['page'] === 'all') {
+    echo "<h1 style='text-align:center;'>All Posts</h1>";  
+    } else if (isset($_GET['page']) && $_GET['page'] === 'posts') {
+            echo "<h1 style='text-align:center;'>Posts</h1>";
+                } else if (isset($_GET['page']) && $_GET['page'] === 'ads') {
+                        echo "<h1 style='text-align:center;'>Marketplace</h1>";
+                                                } else if (isset($_GET['page']) && $_GET['page'] === 'following') {
+                                                    echo "<h1 style='text-align:center;'>Following</h1>";
+                                                    } else {
+                                                        echo "<h1 style='text-align:center;'>Feed</h1>";
+                                                    }
+?>
+
     <div class="main-layout">
         <!-- Left Sidebar: Profile Summary and Quick Navs -->
         <div style="display: flex; flex-direction: column; gap: 24px; width: 250px;">
@@ -510,9 +522,9 @@ if (!isset($_SESSION['username'])) {
                         <?php echo (isset($_GET['page']) && $_GET['page'] === 'posts') ? 'Posts' : 'Home Feed'; ?>
                     </a>
                     <a href="search.php?page=trips&search=trip" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'trips') echo ' active'; ?>">Trips</a>
-                    <a href="search.php?page=uncycle&search=sell" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'uncycle') echo ' active'; ?>">Uncycle</a>
-                    <a href="search.php?page=market&search=market" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'market') echo ' active'; ?>">
-                        <?php echo (isset($_GET['page']) && $_GET['page'] === 'ads') ? 'Ads' : 'Marketplace'; ?>
+                    <a href="search.php?page=uncycle&search=sell" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'uncycle') echo ' active'; ?>">Upcycle</a>
+                    <a href="index.php?page=ads" class="quick-nav-btn<?php if (isset($_GET['page']) && $_GET['page'] === 'market') echo ' active'; ?>">
+                        Marketplace
                     </a>
                 </div>
             </div>
