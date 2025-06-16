@@ -302,13 +302,94 @@ if (!isset($_SESSION['username'])) {
         .random-account .follow-btn:hover {
             background: #0056b3;
         }
-        @media (max-width: 1000px) {
-            .main-layout { flex-direction: column; gap: 0; }
-            .sidebar { margin-bottom: 24px; }
+        /* Popup styles */
+        .popup-bg {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.35);
+            justify-content: center;
+            align-items: flex-start;
         }
-        @media (max-width: 700px) {
-            .feed-container { max-width: 98vw; }
-            .post { padding: 16px 8px 14px 8px; }
+        .popup-content {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            padding: 32px 28px 24px 28px;
+            margin-top: 60px;
+            min-width: 320px;
+            max-width: 95vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .popup-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 18px;
+        }
+        .popup-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.5rem;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .popup-community-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .popup-community {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        .popup-community:last-child {
+            border-bottom: none;
+        }
+        .popup-community .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #007bff;
+        }
+        .popup-community .community-name {
+            font-weight: bold;
+            color: #232526;
+            font-size: 1rem;
+        }
+        .popup-community .community-tag {
+            background: #f0f0f2;
+            color: #007bff;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .popup-community .join-btn {
+            margin-left: auto;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 6px 18px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .popup-community .join-btn:hover {
+            background: #0056b3;
         }
     </style>
     <script>
@@ -330,6 +411,28 @@ if (!isset($_SESSION['username'])) {
         }
         window.onload = function() {
             filterPosts('all');
+        }
+        function openCommunitiesPopup() {
+            document.getElementById('communities-popup-bg').style.display = 'flex';
+        }
+        function closeCommunitiesPopup() {
+            document.getElementById('communities-popup-bg').style.display = 'none';
+        }
+        function joinCommunity(communityName) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "join_community.php", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var btn = document.querySelector('button[data-community="' + communityName + '"]');
+                    if (btn) {
+                        btn.innerText = "Joined";
+                        btn.disabled = true;
+                        btn.style.background = "#28a745";
+                    }
+                }
+            };
+            xhr.send("community=" + encodeURIComponent(communityName));
         }
     </script>
 </head>
@@ -388,42 +491,84 @@ if (!isset($_SESSION['username'])) {
         <div style="display: block; width: 250px;">
             <div class="sidebar" style="margin-bottom:24px;">
                 <div class="random-accounts-title">Suggested Accounts</div>
-                <div class="random-account">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" class="profile-pic" alt="Profile">
-                    <span class="username">photog_anna</span>
-                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
-                </div>
-                <div class="random-account">
-                    <img src="https://randomuser.me/api/portraits/men/65.jpg" class="profile-pic" alt="Profile">
-                    <span class="username">gear_guru</span>
-                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
-                </div>
-                <div class="random-account">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" class="profile-pic" alt="Profile">
-                    <span class="username">snapqueen</span>
-                    <a href="../users/profile.php"><button class="follow-btn">Follow</button></a>
-                </div>
+                <?php
+                $getrandom3 = mysqli_query($conn, "SELECT * FROM users WHERE username != '$username' ORDER BY RAND() LIMIT 3");
+                while ($row = mysqli_fetch_assoc($getrandom3)) {
+                    $random_username = $row['username'];
+                    $random_picture = $row['picture'] ? $row['picture'] : 'default_profile_pic.png';
+                    echo "
+                        <div class='random-account'>
+                            <img src='../users/profile_picture/$random_picture' class='profile-pic' alt='Profile'>
+                            <span class='username'>$random_username</span>
+                            <a href='../users/profile.php?username=$random_username'><button class='follow-btn'>view</button></a>
+                        </div>
+                    ";
+                }
+                ?>
             </div>
             <div class="sidebar">
                 <div class="random-accounts-title">Suggested Communities</div>
-                <div class="random-account">
-                    <img src="https://img.icons8.com/color/48/000000/camera--v2.png" class="profile-pic" alt="Community">
-                    <span class="username">Street Photography</span>
-                    <a href="#"><button class="follow-btn">Join</button></a>
-                </div>
-                <div class="random-account">
-                    <img src="https://img.icons8.com/color/48/000000/landscape.png" class="profile-pic" alt="Community">
-                    <span class="username">Nature Lovers</span>
-                    <a href="#"><button class="follow-btn">Join</button></a>
-                </div>
-                <div class="random-account">
-                    <img src="https://img.icons8.com/color/48/000000/portrait.png" class="profile-pic" alt="Community">
-                    <span class="username">Portrait Pros</span>
-                    <a href="#"><button class="follow-btn">Join</button></a>
-                </div>
+                <?php
+                // Only show communities the user hasn't joined
+                $gettop3 = mysqli_query($conn, "
+                    SELECT c.* FROM communities c
+                    LEFT JOIN join_comm j ON c.name = j.community AND j.username = '$username'
+                    WHERE j.username IS NULL
+                    ORDER BY c.members DESC LIMIT 3
+                ");
+                while ($row = mysqli_fetch_assoc($gettop3)) {
+                    $community_name = $row['name'];
+                    $community_picture = $row['picture'] ? $row['picture'] : 'default_community_pic.png';
+                    echo "
+                        <div class='random-account'>
+                            <img src='../communities/pictures/$community_picture' class='profile-pic' alt='Community'>
+                            <span class='username'>$community_name</span>
+                            <button class='follow-btn' type='button' data-community=\"" . htmlspecialchars($community_name, ENT_QUOTES) . "\" onclick=\"joinCommunity('" . htmlspecialchars($community_name, ENT_QUOTES) . "')\">Join</button>
+                        </div>
+                    ";
+                }
+                ?>
                 <div style="text-align:right; margin-top:8px;">
-                    <a href="#" style="font-size:13px;color:#007bff;text-decoration:none;font-weight:bold;">View more &rarr;</a>
+                    <a href="javascript:void(0);" onclick="openCommunitiesPopup()" style="font-size:13px;color:#007bff;text-decoration:none;font-weight:bold;">View more &rarr;</a>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- Communities Popup -->
+    <div class="popup-bg" id="communities-popup-bg" onclick="if(event.target===this)closeCommunitiesPopup();">
+        <div class="popup-content">
+            <button class="popup-close" onclick="closeCommunitiesPopup()">&times;</button>
+            <div class="popup-title">All Communities</div>
+            <div class="popup-community-list">
+                <?php
+                // Get all communities and check if user joined
+                $getall = mysqli_query($conn, "
+                    SELECT c.*, 
+                        CASE WHEN j.username IS NULL THEN 0 ELSE 1 END AS joined
+                    FROM communities c
+                    LEFT JOIN join_comm j ON c.name = j.community AND j.username = '$username'
+                    ORDER BY c.members DESC
+                ");
+                while ($row = mysqli_fetch_assoc($getall)) {
+                    $community_id = $row['id'];
+                    $community_name = $row['name'];
+                    $community_picture = $row['picture'] ? $row['picture'] : 'default_community_pic.png';
+                    $members = $row['members'];
+                    $joined = $row['joined'];
+                    $community_url = "../communities/community.php?id=" . urlencode($community_id);
+                    echo "
+                        <div class='popup-community'>
+                            <img src='../communities/pictures/$community_picture' class='profile-pic' alt='Community'>
+                            <a href='$community_url' class='community-name' style='color:#007bff;text-decoration:none;font-weight:bold;' target='_blank'>$community_name</a>
+                            <span class='community-tag'>$members members</span>";
+                    if ($joined) {
+                        echo "<span style='margin-left:auto;background:#28a745;color:#fff;padding:6px 18px;border-radius:16px;font-weight:bold;font-size:14px;'>Joined</span>";
+                    } else {
+                        echo "<button class='join-btn' type='button' data-community=\"" . htmlspecialchars($community_name, ENT_QUOTES) . "\" onclick=\"joinCommunity('" . htmlspecialchars($community_name, ENT_QUOTES) . "')\">Join now</button>";
+                    }
+                    echo "</div>";
+                }
+                ?>
             </div>
         </div>
     </div>
