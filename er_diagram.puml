@@ -1,0 +1,80 @@
+@startuml
+entity users {
+  * user_id : int <<PK>>
+  --
+  username : varchar
+  password : varchar
+  name : varchar
+  email : varchar
+  bio : text
+  picture : varchar
+  ig : varchar
+}
+
+entity posts {
+  * post_id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  username : varchar
+  title : varchar
+  caption : text
+  picture : varchar
+  price : decimal
+  type : enum
+  community_id : int <<FK>>
+  created_at : datetime
+}
+
+entity comments {
+  * comment_id : int <<PK>>
+  --
+  post_id : int <<FK>>
+  user_id : int <<FK>>
+  content : text
+  created_at : datetime
+}
+
+entity communities {
+  * id : int <<PK>>
+  --
+  name : varchar
+  description : text
+  picture : varchar
+  members : int
+}
+
+entity join_comm {
+  * id : int <<PK>>
+  --
+  username : varchar <<FK>>
+  community : varchar <<FK>>
+}
+
+entity following {
+  * id : int <<PK>>
+  --
+  follower : varchar <<FK>>
+  following : varchar <<FK>>
+}
+
+entity messages {
+  * message_id : int <<PK>>
+  --
+  sender : varchar <<FK>>
+  receiver : varchar <<FK>>
+  content : text
+  sent_at : datetime
+  is_read : boolean
+}
+
+users ||--o{ posts : "writes"
+users ||--o{ comments : "writes"
+posts ||--o{ comments : "has"
+users ||--o{ following : "follows"
+users ||--o{ join_comm : "joins"
+communities ||--o{ join_comm : "has"
+communities ||--o{ posts : "contains"
+users ||--o{ messages : "sends"
+users ||--o{ messages : "receives"
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+title Project Timeline for Photobase
+
+start
+
+:Phase 1: Initial Planning & Requirement Gathering;
+:Define objectives, gather requirements, identify features, draft use cases, prepare wireframes;
+
+:Phase 2: System & Database Design;
+:Design architecture, create diagrams (ER, class, sequence, deployment), design schema, plan structure, document design;
+
+:Phase 3: Environment Setup & Tooling;
+:Set up XAMPP, Git, configure DB, prepare test data, set up code editor;
+
+:Phase 4: Core Backend Development;
+:Implement authentication, profile management, posting, commenting, following, feed logic;
+
+:Phase 5: Community & Marketplace Modules;
+:Develop community features, advanced engagement, marketplace, integrate notifications;
+
+:Phase 6: Chat, Messaging & Notification System;
+:Build chat system, group/community chat, notification center;
+
+:Phase 7: Advanced Search & Analytics;
+:Implement advanced search, analytics dashboard, admin tools;
+
+:Phase 8: Responsive Design & UI Polish;
+:Apply responsive design, refine UI/UX, add dialogs/popups, usability testing;
+
+:Phase 9: Testing, Optimization & Security Review;
+:Manual/automated testing, cross-browser/device tests, optimize performance, review security, bug fixing;
+
+:Phase 10: Documentation, Deployment & Final Review;
+:Prepare documentation, deploy app, final bug fixes, polish UI, collect feedback, prepare report/presentation;
+
+stop
+@enduml

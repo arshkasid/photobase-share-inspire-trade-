@@ -87,6 +87,65 @@ $users = mysqli_query($conn, "
             .chat-main { padding: 18px 8px 14px 8px; }
             .chat-box-fixed { min-height: 180px; max-height: 180px; height: 180px; }
         }
+        .chat-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.09);
+            padding: 24px 18px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+        .chat-messages {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+            word-break: break-word;
+            margin-bottom: 0;
+            box-sizing: border-box;
+        }
+        .chat-message.user {
+            align-self: flex-end;
+            background: #e6f0ff;
+            border-radius: 14px 14px 4px 14px;
+            padding: 10px 14px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .chat-message.other {
+            align-self: flex-start;
+            background: #f4f4f4;
+            border-radius: 14px 14px 14px 4px;
+            padding: 10px 14px;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .chat-message .chat-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
+            text-align: right;
+        }
+        @media (max-width: 600px) {
+            .chat-container {
+                max-width: 98vw;
+                padding: 8px 2vw;
+            }
+            .chat-message {
+                max-width: 90%;
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 <body>

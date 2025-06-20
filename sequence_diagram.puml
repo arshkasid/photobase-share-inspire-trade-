@@ -1,0 +1,28 @@
+@startuml
+actor User
+
+User -> "Web Browser" : Open photobase
+"Web Browser" -> "Web Server (PHP)" : HTTP Request (login/register)
+"Web Server (PHP)" -> "MySQL Database" : Query user data
+"MySQL Database" --> "Web Server (PHP)" : User data/result
+"Web Server (PHP)" --> "Web Browser" : Render dashboard/feed
+
+User -> "Web Browser" : Create post / comment / join community
+"Web Browser" -> "Web Server (PHP)" : AJAX/Post request (post/comment/join)
+"Web Server (PHP)" -> "MySQL Database" : Insert/Update data
+"MySQL Database" --> "Web Server (PHP)" : Success/Failure
+"Web Server (PHP)" --> "Web Browser" : Update UI / show result
+
+User -> "Web Browser" : Search for users/posts/communities
+"Web Browser" -> "Web Server (PHP)" : AJAX/Search request
+"Web Server (PHP)" -> "MySQL Database" : Search query
+"MySQL Database" --> "Web Server (PHP)" : Search results
+"Web Server (PHP)" --> "Web Browser" : Display results
+
+User -> "Web Browser" : Send message (chat)
+"Web Browser" -> "Web Server (PHP)" : AJAX/Post message
+"Web Server (PHP)" -> "MySQL Database" : Store message
+"MySQL Database" --> "Web Server (PHP)" : Success
+"Web Server (PHP)" --> "Web Browser" : Update chat UI
+
+@enduml

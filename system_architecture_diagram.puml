@@ -1,0 +1,40 @@
+@startuml
+actor User
+
+node "User Device" {
+  [Web Browser]
+}
+
+node "Web Server" {
+  [Frontend (HTML/CSS/JS/AJAX)]
+  [Backend (PHP Controllers, REST Endpoints)]
+  folder "/users/"
+  folder "/communities/"
+  folder "/feed/"
+  folder "/assests/"
+  folder "/connect/"
+}
+
+database "MySQL Database" as db
+
+node "File Storage" {
+  [User Images]
+  [Community Images]
+  [Post Images]
+}
+
+User --> [Web Browser] : Interacts via UI
+[Web Browser] --> [Frontend (HTML/CSS/JS/AJAX)] : Loads pages, sends AJAX
+[Frontend (HTML/CSS/JS/AJAX)] --> [Backend (PHP Controllers, REST Endpoints)] : AJAX/API Requests
+[Backend (PHP Controllers, REST Endpoints)] --> db : SQL Queries (users, posts, comments, etc.)
+[Backend (PHP Controllers, REST Endpoints)] --> [User Images]
+[Backend (PHP Controllers, REST Endpoints)] --> [Community Images]
+[Backend (PHP Controllers, REST Endpoints)] --> [Post Images]
+
+[Backend (PHP Controllers, REST Endpoints)] ..> "/users/" : User logic
+[Backend (PHP Controllers, REST Endpoints)] ..> "/communities/" : Community logic
+[Backend (PHP Controllers, REST Endpoints)] ..> "/feed/" : Feed/Search logic
+[Frontend (HTML/CSS/JS/AJAX)] ..> "/assests/" : Loads CSS/JS/Images
+[Backend (PHP Controllers, REST Endpoints)] ..> "/connect/" : DB Connection
+
+@enduml

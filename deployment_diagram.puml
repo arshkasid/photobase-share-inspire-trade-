@@ -1,0 +1,34 @@
+@startuml
+actor User
+
+node "User Device" {
+  [Web Browser]
+}
+
+node "Web Server" {
+  [Apache/PHP Application]
+  folder "/users/"
+  folder "/communities/"
+  folder "/feed/"
+  folder "/assests/"
+  folder "/connect/"
+}
+
+node "Database Server" {
+  [MySQL Database]
+}
+
+node "File Storage" {
+  [User Images]
+  [Community Images]
+  [Post Images]
+}
+
+User --> [Web Browser] : Uses
+[Web Browser] --> [Apache/PHP Application] : HTTP/HTTPS Requests
+[Apache/PHP Application] --> [MySQL Database] : SQL Queries
+[Apache/PHP Application] --> [User Images]
+[Apache/PHP Application] --> [Community Images]
+[Apache/PHP Application] --> [Post Images]
+
+@enduml

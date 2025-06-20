@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($comment)) {
         $insert_comment = mysqli_query($conn, "INSERT INTO comments (post_id, username, comment) VALUES ('$postid', '$username', '$comment')");
         if ($insert_comment) {
-            echo "<script>alert('Comment added successfully!'); window.location.href='comments.php?post_id=$postid';</script>";
+            echo "<script>window.location.href='comments.php?post_id=$postid';</script>";
         } else {
             echo "<script>alert('Failed to add comment. Please try again.');</script>";
         }

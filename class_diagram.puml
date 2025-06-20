@@ -1,0 +1,90 @@
+@startuml
+
+class User {
+  - user_id : int
+  - username : string
+  - password : string
+  - name : string
+  - email : string
+  - bio : string
+  - picture : string
+  - ig : string
+  + register()
+  + login()
+  + editProfile()
+  + followUser()
+  + sendMessage()
+}
+
+class Post {
+  - post_id : int
+  - user_id : int
+  - community_id : int
+  - title : string
+  - caption : string
+  - picture : string
+  - price : decimal
+  - type : string
+  - created_at : datetime
+  + create()
+  + edit()
+  + delete()
+  + comment()
+}
+
+class Comment {
+  - comment_id : int
+  - post_id : int
+  - user_id : int
+  - content : string
+  - created_at : datetime
+  + addComment()
+  + editComment()
+  + deleteComment()
+}
+
+class Community {
+  - id : int
+  - name : string
+  - description : string
+  - picture : string
+  - members : int
+  + createCommunity()
+  + joinCommunity()
+  + leaveCommunity()
+  + postInCommunity()
+}
+
+class Message {
+  - message_id : int
+  - sender : string
+  - receiver : string
+  - content : string
+  - sent_at : datetime
+  - is_read : boolean
+  + sendMessage()
+  + readMessage()
+}
+
+class MarketplaceAd {
+  - post_id : int
+  - user_id : int
+  - title : string
+  - description : string
+  - price : decimal
+  - picture : string
+  + createAd()
+  + markAsSold()
+}
+
+User "1" -- "0..*" Post : creates >
+User "1" -- "0..*" Comment : writes >
+User "1" -- "0..*" Message : sends >
+User "1" -- "0..*" Message : receives >
+User "1" -- "0..*" Community : joins >
+User "1" -- "0..*" MarketplaceAd : posts >
+Post "1" -- "0..*" Comment : has >
+Community "1" -- "0..*" Post : contains >
+Community "1" -- "0..*" User : members >
+
+@enduml
